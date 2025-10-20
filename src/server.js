@@ -6,6 +6,7 @@ import notesRouter from './routes/notesRoutes.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
+import { errors } from 'celebrate';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(notesRouter);
 
 app.use(notFoundHandler);
+app.use(errors());
 app.use(errorHandler);
 
 await connectMongoDB();

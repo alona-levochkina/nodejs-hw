@@ -2,53 +2,74 @@ import createHttpError from 'http-errors';
 import { Note } from '../models/note.js';
 
 export const getAllNotes = async (req, res, next) => {
-  const notes = await Note.find();
+  const { page = 1, perPage = 10, tag, search} = req.query;
 
-      next(createHttpError(404, 'Nore not found'));
-     res.status(200).json(notes);
-  };
+  const skip = (page - 1) * perPage;
+  const notesQuery = Note.find();
+
+  if (tag) {
+    notesQuery.tag = tag;
+  }
+
+  if (search) {
+    notesQuery.$text = { $search: search };
+  }
+
+  const [totalNotes, notes] = await Promise.all([
+    notesQuery.clone().countDocuments(),
+    notesQuery.skip(skip).limit(perPage),
+  ]);
+
+  const totalPages = Math.ceil(totalNotes / perPage);
+
+  res.status(200).json({
+    page,
+    perPage,
+    totalNotes,
+    totalPages,
+    notes,
+  });
+};
 
 export const getNoteById = async (req, res, next) => {
-   const { noteId } = req.params;
-    const note = await Note.findById(noteId);
+  const { noteId } = req.params;
+  const note = await Note.findById(noteId);
 
-    if (!note) {
-      next(createHttpError(404, 'Nore not found'));
-      return;
-  };
+  if (!note) {
+    next(createHttpError(404, 'Note not found'));
+    return;
+  }
 
-    res.status(200).json(note);
-
+  res.status(200).json(note);
 };
 
 export const createNote = async (req, res, next) => {
   const newNote = await Note.create(req.body);
-      next(createHttpError(404, 'Nore not found'));
-    res.status(201).json(newNote);
+  res.status(201).json(newNote);
 };
 
 export const deleteNote = async (req, res, next) => {
-    const { noteId } = req.params;
-    const deletedNote = await Note.findByIdAndDelete(noteId);
+  const { noteId } = req.params;
+  const deletedNote = await Note.findByIdAndDelete(noteId);
 
-    if (!deletedNote) {
-      next(createHttpError(404, 'Nore not found'));
-      return;
-  };
+  if (!deletedNote) {
+    next(createHttpError(404, 'Note not found'));
+    return;
+  }
 
-    res.status(200).json(deletedNote);
+  res.status(200).json(deletedNote);
 };
 
 export const updateNote = async (req, res, next) => {
-    const { noteId } = req.params;
-    const updatedNote = await Note.findByIdAndUpdate(noteId, req.body, {
-      new: true,
-    });
+  const { noteId } = req.params;
+  const updatedNote = await Note.findByIdAndUpdate(noteId, req.body, {
+    new: true,
+  });
 
-    if (!updatedNote) {
-      next(createHttpError(404, 'Nore not found'));
-      return;
-  };
+  if (!updatedNote) {
+    next(createHttpError(404, 'Note not found'));
+    return;
+  }
 
-    res.status(200).json(updatedNote);
+  res.status(200).json(updatedNote);
 };
