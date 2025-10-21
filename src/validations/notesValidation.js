@@ -37,5 +37,8 @@ export const updateNoteSchema = {
     title: Joi.string().min(1),
     content: Joi.string().allow(''),
     tag: Joi.string().valid(...TAGS),
+  }).min(1)
+    .messages({
+    'Object.min': 'Body must have at least one filed to update',
   }),
 };
