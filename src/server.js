@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import { connectMongoDB } from "./db/connectMongoDB.js";
 import notesRouter from './routes/notesRoutes.js';
-import authRoutes from './routes/authRoutes.js';
+import authRouter from './routes/authRoutes.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-app.use(authRoutes);
+app.use(authRouter);
 app.use(notesRouter);
 
 app.use(notFoundHandler);
