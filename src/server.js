@@ -1,15 +1,15 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from "cors";
-import dotenv from 'dotenv';
 import { connectMongoDB } from "./db/connectMongoDB.js";
-import notesRouter from './routes/notesRoutes.js';
-import authRouter from './routes/authRoutes.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errors } from 'celebrate';
+import notesRouter from './routes/notesRoutes.js';
+import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js';
 import cookieParser from 'cookie-parser';
-
 
 dotenv.config();
 
@@ -23,6 +23,7 @@ app.use(cookieParser());
 
 app.use(authRouter);
 app.use(notesRouter);
+app.use(userRouter);
 
 app.use(notFoundHandler);
 app.use(errors());

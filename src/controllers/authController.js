@@ -118,7 +118,7 @@ export const requestResetEmail = async (req, res, next) => {
     }
 
     const resetToken = jwt.sign(
-      { sub: user._id, email, },
+      { sub: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '15m' },
     );
@@ -135,16 +135,15 @@ export const requestResetEmail = async (req, res, next) => {
       await sendEmail({
         from: process.env.SMTP_FROM,
         to: email,
-        subject: 'Reset your password',
+        subject: 'Password Reset',
         html,
       })
     } catch {
-      next(createHttpError(500, 'Failed to send the email, please try again later.'));
-      return
+      throw createHttpError(500, 'Failed to send the email, please try again later.')
     };
 
     res.status(200).json({
-      message: 'If this email exist, a reset link has been sent',
+      message: 'Password reset email sent successfully',
     });
   } catch (error) {
     next(error)
